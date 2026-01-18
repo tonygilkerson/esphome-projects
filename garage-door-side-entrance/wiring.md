@@ -1,5 +1,8 @@
 # Wiring
 
+![wire](./wiring.drawio.png)
+
+## Wire Table
 
 | Pico       | OD Cover Button | ID Cover Button | Lock Button |  OD Cover LED  |    Run LED     |    Lock LED    |   Unlock LED   | Cover Open LED |
 | ---------- | :-------------: | :-------------: | :---------: | :------------: | :------------: | :------------: | :------------: | :------------: |
