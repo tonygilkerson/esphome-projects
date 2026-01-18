@@ -1,0 +1,132 @@
+esphome:
+  name: "garage-door-side-entrance"
+  friendly_name: Garage Door Side Entrance Controller
+  on_boot:
+    - priority: -100.0 # At this priority, pretty much everything should already be initialized.
+      then:
+        - switch.turn_on: lock_switch
+        - switch.turn_off: cover_open_switch
+        - output.turn_on: run_led
+rp2040:
+  board: rpipicow
+
+globals:
+  - id: is_cover_locked
+    type: bool
+    restore_value: no
+    initial_value: 'true'
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esphome_api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot in case wifi connection fails
+  ap:
+    ssid: "Play1 Fallback Hotspot"
+    password: "odKpKOjGRAup"
+
+#
+# LEDs
+#    
+output:
+  - platform: gpio
+    pin: GPIO15
+    id: od_cover_led
+  
+  - platform: gpio
+    pin: GPIO14
+    id: run_led
+  
+  - platform: gpio
+    pin: GPIO13
+    id: lock_led
+  
+  - platform: gpio
+    pin: GPIO12
+    id: unlock_led
+  
+  - platform: gpio
+    pin: GPIO11
+    id: cover_open_led
+
+#
+# Buttons
+#
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO16
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Outdoor Cover Button"
+    id: od_cover_button
+    on_press:
+      then:
+        - logger.log: "👉 BUTTON Press - od_cover_button"
+        - lambda: |-
+            if (id(lock_switch).state) {
+              ESP_LOGI("od_cover_button", "❌ IGNORED Press - cover is locked");
+            } else {
+              ESP_LOGI("od_cover_button", "✅ Toggle - toggle the cover_open_switch");
+              id(cover_open_switch).toggle();
+            }
+
+  - platform: gpio
+    pin:
+      number: GPIO17
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Indoor Cover Button"
+    id: id_cover_button
+    on_press:
+      then:
+        - logger.log: "👉 BUTTON Press - id_cover_button"
+        - logger.log: "✅ Toggle - toggle the cover_open_switch"
+        - switch.toggle: cover_open_switch
+
+  - platform: gpio
+    pin:
+      number: GPIO18
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Lock Button"
+    id: lock_button
+    on_press:
+      then:
+        - logger.log: "👉 BUTTON Press - lock_button"
+        - switch.toggle: lock_switch
+
+#
+# Switches
+#
+switch:
+  - platform: output
+    name: "Lock Switch"
+    output: lock_led
+    id: lock_switch
+    on_turn_on:
+      then:
+        - logger.log: "🔒 LOCK - lock_switch turned ON"
+        - output.turn_on: lock_led
+        - output.turn_off: unlock_led
+    on_turn_off:
+      then:
+        - logger.log: "🔒 UNLOCK - lock_switch turned OFF"
+        - output.turn_off: lock_led
+        - output.turn_on: unlock_led
+  - platform: output
+    name: "Cover Open Switch"
+    output: cover_open_led
+    id: cover_open_switch
