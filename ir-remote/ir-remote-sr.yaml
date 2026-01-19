@@ -1,0 +1,96 @@
+esphome:
+  name: ir-smart-remote
+  friendly_name: IR Smart Remote
+
+
+rp2040:
+  board: rpipicow
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+globals:
+  - id: radio_state
+    type: bool
+    restore_value: true
+    initial_value: "false" # Assume off initially (false = off, true = on)
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esphome_api_key
+
+# Allow Over-The-Air updates
+ota:
+  - platform: esphome
+    password: "a35f12e55c21c733884ce6eaded138bd"
+
+# Enable IR receiver on GPIO14
+remote_receiver:
+  pin:
+    number: GPIO16
+    inverted: true
+  dump: nec
+  idle: 100ms
+  filter: 10us
+  tolerance: 25%
+  on_nec:
+    then:
+      - lambda: |-
+          if (x.address == 0xEF00 && x.command == 0xF00F) {
+            id(radio_state) = !id(radio_state);
+            ESP_LOGI("state_machine", "Remote power pressed. New state: %s", id(radio_state) ? "ON" : "OFF");
+          }
+
+# Enable IR transmitter on GPIO15
+remote_transmitter:
+  pin: GPIO15
+  carrier_duty_percent: 50%
+
+# Expose radio_state as a binary sensor to be used in automations
+binary_sensor:
+  - platform: template
+    name: "Radio State"
+    lambda: "return id(radio_state);"
+
+button:
+  - platform: template
+    name: "Radio On/Off"
+    on_press:
+      - if:
+          condition:
+            lambda: "return !id(radio_state);" # Only send if currently OFF
+          then:
+            - remote_transmitter.transmit_nec:
+                address: 0xEF00
+                command: 0xF00F
+          else:
+            - remote_transmitter.transmit_nec:
+                address: 0xEF00
+                command: 0xF00F
+
+  - platform: template
+    name: "Show Temp"
+    on_press:
+      - remote_transmitter.transmit_nec:
+          address: 0xEF01
+          command: 0xED1
+
+  - platform: template
+    name: "Heat UP"
+    on_press:
+      - remote_transmitter.transmit_nec:
+          address: 0xEF01
+          command: 0xE51A
+
+  - platform: template
+    name: "Heat DOWN"
+    on_press:
+      - remote_transmitter.transmit_nec:
+          address: 0xEF01
+          command: 0xFA05
+

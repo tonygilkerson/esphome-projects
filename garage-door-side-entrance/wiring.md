@@ -1,6 +1,6 @@
 # Wiring
 
-![wire](./wiring.drawio.png)
+![wire](img/wiring.drawio.png)
 
 ## Wire Table
 

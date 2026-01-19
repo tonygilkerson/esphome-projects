@@ -1,0 +1,42 @@
+esphome:
+  name: ir-remote-receiver
+  friendly_name: IR Remote Receiver
+
+rp2040:
+  board: rpipicow
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+globals:
+  - id: radio_state
+    type: bool
+    restore_value: true
+    initial_value: "false" # Assume off initially (false = off, true = on)
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret esphome_api_key
+
+# Allow Over-The-Air updates
+ota:
+  - platform: esphome
+    password: "a35f12e55c21c733884ce6eaded138bd"
+
+# Enable IR receiver on GPIO14
+remote_receiver:
+  pin:
+    number: GPIO16
+    inverted: true
+  dump: nec
+  idle: 100ms
+  filter: 10us
+  tolerance: 25%
+
+
+

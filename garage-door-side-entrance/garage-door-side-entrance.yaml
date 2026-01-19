@@ -1,5 +1,5 @@
 esphome:
-  name: "garage-door-side-entrance"
+  name: garage-door-side-entrance
   friendly_name: Garage Door Side Entrance Controller
   on_boot:
     - priority: -100.0 # At this priority, pretty much everything should already be initialized.
@@ -24,6 +24,7 @@ api:
   encryption:
     key: !secret esphome_api_key
 
+# Allow Over-The-Air updates  
 ota:
   - platform: esphome
     password: !secret ota_password
