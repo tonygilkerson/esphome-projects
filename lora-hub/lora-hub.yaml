@@ -1,0 +1,100 @@
+esphome:
+  name: lora-hub
+  friendly_name: LoRa Hub
+  on_boot:
+    priority: 600  # Run before other components
+    then:
+      - output.turn_on: lora_enable  # Enable the LoRa module
+      - delay: 100ms
+      - logger.log: "LoRa Hub starting..."
+
+rp2040:
+  board: rpipicow
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota-password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot in case wifi connection fails
+  ap:
+    ssid: "LoRa-Hub Fallback Hotspot"
+    password: !secret ap-password
+
+# EN pin - must be HIGH to enable the LoRa module
+output:
+  - platform: gpio
+    pin: GPIO15
+    id: lora_enable
+    
+# SPI bus configuration
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+  miso_pin: GPIO16
+
+# Global variables to store received data
+globals:
+  - id: last_message
+    type: std::string
+    restore_value: no
+    initial_value: '""'
+
+# SX127x LoRa configuration
+sx127x:
+  id: lora_radio
+  cs_pin: GPIO17
+  rst_pin: GPIO20
+  dio0_pin: GPIO21
+  frequency: 915MHz
+  modulation: LORA
+  rx_start: true  # Start receiver on boot
+  
+  # LoRa specific settings - MUST MATCH TRANSMITTER
+  spreading_factor: 10
+  coding_rate: CR_4_5
+  bandwidth: 250_0kHz
+  preamble_size: 8
+  sync_value: 0x12
+  crc_enable: true
+  
+  # Trigger when packet is received
+  on_packet:
+    then:
+      - lambda: |-
+          // x is a std::vector<uint8_t> containing the received data
+          std::string msg(x.begin(), x.end());
+          ESP_LOGI("lora", "Received: %s (length: %d)", msg.c_str(), x.size());
+          id(last_message) = msg;
+          id(lora_message).publish_state(msg);
+          id(message_received).publish_state(true);
+      - delay: 1s
+      - binary_sensor.template.publish:
+          id: message_received
+          state: OFF
+
+# Text sensor to display received messages
+text_sensor:
+  - platform: template
+    name: "Last LoRa Message"
+    id: lora_message
+    icon: "mdi:message-text"
+
+# Binary sensor to indicate message received
+binary_sensor:
+  - platform: template
+    name: "LoRa Message Received"
+    id: message_received
+    device_class: connectivity
