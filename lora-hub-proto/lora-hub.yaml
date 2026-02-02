@@ -1,5 +1,5 @@
 esphome:
-  name: lora-hub
+  name: lora-hub-proto
   friendly_name: LoRa Hub
   on_boot:
     priority: 600  # Run before other components
@@ -80,14 +80,16 @@ sx127x:
           id(last_message) = msg;
           id(lora_message).publish_state(msg);
           id(message_received).publish_state(true);
-      # IMPORTANT: Add delay to give sender time to switch to RX mode
-      - delay: 200ms  # Increased from almost immediate to 200ms
-      # Send ACK message back to the transmitter
-      - sx127x.send_packet:
-          id: lora_radio
-          data: "ACK"
-      - logger.log: "ACK sent"
+      # # IMPORTANT: Add delay to give sender time to switch to RX mode
+      # - delay: 200ms  # Increased from almost immediate to 200ms
+      # # Send ACK message back to the transmitter
+      # - sx127x.send_packet:
+      #     id: lora_radio
+      #     data: "ACK"
+      # - logger.log: "ACK sent"
       - delay: 1s
+      # reset the "LoRa Message Received" binary sensor back to the OFF state after it was turned ON when a message was received.
+      # This creates a momentary pulse or trigger event in Home Assistant.
       - binary_sensor.template.publish:
           id: message_received
           state: OFF
