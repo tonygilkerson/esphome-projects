@@ -21,12 +21,12 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: !secret esphome_api_key
+    key: !secret api_encryption_key
 
 # Allow Over-The-Air updates  
 ota:
   - platform: esphome
-    password: !secret ota_password
+    password: !secret ota-password
 
 wifi:
   ssid: !secret wifi_ssid
@@ -75,14 +75,17 @@ binary_sensor:
     on_press:
       then:
         - logger.log: "👉 BUTTON Press - od_cover_button"
-       # DEVTODO - replace your_cover_name with the entityID of the side door when you get it
-        - lambda: |-
-            if (id(lock_switch).state) {
-              ESP_LOGI("od_cover_button", "❌ IGNORED Press - cover is locked");
-            } else {
-              ESP_LOGI("od_cover_button", "✅ Toggle - toggle the cover");
-              id(api_server).call_service("cover.toggle", {{"entity_id", "cover.your_cover_name"}});
-            }
+        - if:
+            condition:
+              switch.is_on: lock_switch
+            then:
+              - logger.log: "❌ IGNORED Press - cover is locked"
+            else:
+              - logger.log: "✅ Toggle - toggle the cover"
+              - homeassistant.service:
+                  service: cover.toggle
+                  data:
+                    entity_id: cover.garage_door_opener_c0f8d0_side_door_garage_door
 
   - platform: gpio
     pin:
@@ -95,11 +98,10 @@ binary_sensor:
       then:
         - logger.log: "👉 BUTTON Press - id_cover_button"
         - logger.log: "✅ Toggle - toggle the cover"
-       # DEVTODO - replace your_cover_name with the entityID of the side door when you get it
         - homeassistant.service:
             service: cover.toggle
             data:
-              entity_id: cover.your_cover_name
+              entity_id: cover.garage_door_opener_c0f8d0_side_door_garage_door
 
   - platform: gpio
     pin:
