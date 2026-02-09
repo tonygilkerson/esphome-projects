@@ -1,5 +1,4 @@
 (sym_lib_table
   (version 7)
-  (lib (name "gdose_library")(type "KiCad")(uri "${KIPRJMOD}/gdose_library.kicad_sym")(options "")(descr ""))
   (lib (name "gdse_library")(type "KiCad")(uri "${KIPRJMOD}/gdse_library.kicad_sym")(options "")(descr ""))
 )
