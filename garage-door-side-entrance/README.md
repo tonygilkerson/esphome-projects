@@ -12,8 +12,7 @@ A cover controller for the side garage door.
 ### JST
 
 * [Adafruit](https://www.adafruit.com/product/4423) - 2.5mm Pitch Connector Kit - JST XH Compatible - 560 Piece Kit
+* [DigiKey B4B-XH-A](https://www.digikey.com/en/products/detail/jst-sales-america-inc/B4B-XH-A/1651047)
 * [JST Wire Connectors](https://www.jst-mfg.com/product/index.php?series=683) - Find part number here, use to search on DigiKey
-  * [JST](https://www.jst-mfg.com/product/index.php?series=277)
-* [digikey JST connectors](https://www.digikey.com/en/products/detail/jst-sales-america-inc/b04b-xask-1/1634735)
-* [digikey JST connectors](https://www.digikey.com/en/products/detail/te-connectivity-amp-connectors/926305-6/5157506)
+
  
