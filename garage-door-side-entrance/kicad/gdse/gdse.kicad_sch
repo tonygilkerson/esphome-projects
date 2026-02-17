@@ -2929,7 +2929,7 @@
 		)
 		(uuid "ffe628cb-d534-463a-ba7e-77a5c0833c5e")
 	)
-	(label "Is Active LED | GP9 | 3-12"
+	(label "Is Active LED | GP9 | P12"
 		(at 86.36 60.96 0)
 		(effects
 			(font
@@ -2949,7 +2949,7 @@
 		)
 		(uuid "1ebd79c1-1a70-4efb-9fcf-87ca44ba6095")
 	)
-	(label "Run LED | GP11 | 5-15"
+	(label "Run LED | GP11 | P15"
 		(at 87.63 86.36 0)
 		(effects
 			(font
@@ -2959,7 +2959,7 @@
 		)
 		(uuid "306e560d-600c-4aa6-8da6-9ede9295da26")
 	)
-	(label "ID Cover Button | GP12 | 6-16"
+	(label "ID Cover Button | GP12 | P16"
 		(at 87.63 91.44 0)
 		(effects
 			(font
@@ -2969,7 +2969,7 @@
 		)
 		(uuid "46425dc2-45b0-4cc5-a18d-d420656a9ce5")
 	)
-	(label "OD Cover Button | GP10 |4-14"
+	(label "OD Cover Button | GP10 | P14"
 		(at 86.36 63.5 0)
 		(effects
 			(font
@@ -2979,7 +2979,7 @@
 		)
 		(uuid "5bcc181d-956a-41ba-9738-1a8ef9e2ec22")
 	)
-	(label "Locked Button | GP14 | 8-19"
+	(label "Locked Button | GP14 | P19"
 		(at 88.9 139.7 0)
 		(effects
 			(font
@@ -2989,7 +2989,7 @@
 		)
 		(uuid "88331a83-fcc9-4361-9095-c722ff9734fe")
 	)
-	(label "Locked LED | GP13 | 7-17"
+	(label "Locked LED | GP13 | P17"
 		(at 88.9 134.62 0)
 		(effects
 			(font

@@ -4,16 +4,19 @@ esphome:
   on_boot:
     - priority: -100.0 # At this priority, pretty much everything should already be initialized.
       then:
-        - switch.turn_on: lock_switch
+        # DEVTODO turn off (unlocked) for testing
+        # - switch.turn_on: lock_switch
+        - switch.turn_off: lock_switch
         - output.turn_on: run_led
 rp2040:
   board: rpipicow
 
-globals:
-  - id: is_cover_locked
-    type: bool
-    restore_value: no
-    initial_value: 'true'
+# DEVTODO - Delete if not used?
+# globals:
+#   - id: is_cover_locked
+#     type: bool
+#     restore_value: no
+#     initial_value: 'true'
 
 # Enable logging
 logger:
@@ -42,24 +45,16 @@ wifi:
 #    
 output:
   - platform: gpio
-    pin: GPIO15
-    id: od_cover_led
+    pin: GPIO9
+    id: is_active_led
   
   - platform: gpio
-    pin: GPIO14
+    pin: GPIO11
     id: run_led
   
   - platform: gpio
     pin: GPIO13
     id: lock_led
-  
-  - platform: gpio
-    pin: GPIO12
-    id: unlock_led
-  
-  - platform: gpio
-    pin: GPIO11
-    id: cover_open_led
 
 #
 # Buttons
@@ -67,7 +62,7 @@ output:
 binary_sensor:
   - platform: gpio
     pin:
-      number: GPIO16
+      number: GPIO10
       mode: INPUT_PULLUP
       inverted: true
     name: "Outdoor Cover Button"
@@ -89,7 +84,7 @@ binary_sensor:
 
   - platform: gpio
     pin:
-      number: GPIO17
+      number: GPIO12
       mode: INPUT_PULLUP
       inverted: true
     name: "Indoor Cover Button"
@@ -105,7 +100,7 @@ binary_sensor:
 
   - platform: gpio
     pin:
-      number: GPIO18
+      number: GPIO14
       mode: INPUT_PULLUP
       inverted: true
     name: "Lock Button"
@@ -127,10 +122,9 @@ switch:
       then:
         - logger.log: "🔒 LOCK - lock_switch turned ON"
         - output.turn_on: lock_led
-        - output.turn_off: unlock_led
     on_turn_off:
       then:
         - logger.log: "🔒 UNLOCK - lock_switch turned OFF"
         - output.turn_off: lock_led
-        - output.turn_on: unlock_led
+
 
